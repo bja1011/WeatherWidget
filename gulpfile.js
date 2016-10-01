@@ -12,6 +12,7 @@ var paths = {
     src: 'src',
     dist: 'dist'
 };
+
 gulp.task('index_dev',function(){
     gulp.src(paths.src+'/index.html')
         .pipe(preprocess({
@@ -64,6 +65,7 @@ gulp.task('js-dev', function () {
         paths.src + '/js/*.js'
     ])
         .pipe(gulp.dest(paths.dist + '/dev/js'))
+        .pipe(lr());
 });
 
 gulp.task('css', function () {
@@ -73,9 +75,10 @@ gulp.task('css', function () {
     ])
         .pipe(less())
         .pipe(autoprefixer())
-        .pipe(concat('weather.min.css'));
-
-})
+        .pipe(concat('weather.min.css'))
+        .pipe(gulp.dest(paths.dist+'/css'))
+        .pipe(lr());
+});
 
 gulp.task('watch', function () {
     lr.listen();
@@ -84,6 +87,10 @@ gulp.task('watch', function () {
     gulp.watch([
             paths.src + '/less/*.less'
         ], ['css']
+    );
+    gulp.watch([
+            paths.src + '/index.html'
+        ], ['index_dev']
     );
     gulp.watch([
         paths.src + '/assets/**/*'
