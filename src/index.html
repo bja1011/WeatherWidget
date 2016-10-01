@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WeatherWidget</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no, maximum-scale=1">
+    <link rel="stylesheet" href="css/style.min.css">
+</head>
+
+<body>
+
+
+    <!-- @if ENV='development' -->
+    <script src="http://localhost:35729/livereload.js"></script>
+
+
+    <script src="dev/js/boot.js"></script>
+    <script src="dev/js/controllers.js"></script>
+
+    <!-- @endif -->
+
+    <!-- @if ENV='production' -->
+    <script src="js/guiapp.min.js"></script>
+    <!-- @endif -->
+
+</body>
+
+</html>
