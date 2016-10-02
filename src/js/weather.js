@@ -4,6 +4,7 @@ var weatherWidget = (function () {
     };
 
     var cityNameEl = document.getElementById("cityName");
+    var forecastEl = document.getElementById("weatherForecast");
 
     var myLocation = {
         lat:null,
@@ -15,16 +16,17 @@ var weatherWidget = (function () {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 console.log(position);
-                getWeather(position.coords.latitude,position.coords.longitude)
+                getWeather('weather',position.coords.latitude,position.coords.longitude);
+                getWeather('forecast',position.coords.latitude,position.coords.longitude);
             });
         } else {
             alert('no geloloc')
         }
     }
 
-    function getWeather(lat,lng) {
+    function getWeather(type,lat,lng) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://api.openweathermap.org/data/2.5/weather?lat='+lat+'&lon='+lng+'&appid=1929fffb238baf259922bfbb99ae5a73');
+        xhr.open('GET', 'http://api.openweathermap.org/data/2.5/'+type+'?lat='+lat+'&lang=pl&lon='+lng+'&appid=1929fffb238baf259922bfbb99ae5a73');
         xhr.onload = function() {
             if (xhr.status === 200) {
                 var resp = JSON.parse(xhr.responseText);
