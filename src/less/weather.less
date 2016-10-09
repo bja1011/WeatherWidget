@@ -14,13 +14,27 @@
   font-family: Lato;
 
   #weatherForecast {
-    height: 350px;
+    height: 330px;
     background-color: #ff5c5c;
     border-radius: 0 0 20px 20px;
+    overflow: hidden;
+
+
+    ul {
+      height: 290px;
+      width: 280px;
+      overflow-y: scroll;
+      padding-right: 20px;
+    }
   }
 
   #currentWeather {
     height: 150px;
+    #locationName {
+      width: 100%;
+      text-align: center;
+      font-size: 40px;
+    }
   }
 
 
