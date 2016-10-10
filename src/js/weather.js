@@ -24,6 +24,7 @@ var weatherWidget = (function () {
     var locationSubmitEl = document.getElementById("submit");
     var manualLocationFormEl = document.getElementById("manualLocationForm");
     var preloaderEl = document.getElementById("preload");
+    var unitsEl = document.getElementById("units");
 
     locationSubmitEl.onclick = function() {
         if(locationInputEl.value != "") {
@@ -35,6 +36,16 @@ var weatherWidget = (function () {
             },locationInputEl.value);
         };
         return false;
+    }
+
+    unitsEl.onclick = function () {
+        config.units == 'metric'?config.units='imperial':config.units='metric';
+        getWeather('weather',config.currentWeatherData.coord.lat,config.currentWeatherData.coord.lon,function (resp) {
+            setCurrentWeather(resp);
+        });
+        getWeather('forecast/daily',config.currentWeatherData.coord.lat,config.currentWeatherData.coord.lon,function (resp) {
+            setForecastWeather(resp)
+        });
     }
 
     function getLocalization() {
@@ -94,6 +105,8 @@ var weatherWidget = (function () {
         currentPressureEl.innerHTML = formatPressure(weatherData.main.pressure);
         currentWindDirectionEl.style.transform = 'rotate('+weatherData.wind.deg+'deg)';
         currentWindSpeedEl.innerHTML = formatWindSpeed(weatherData.wind.speed);
+
+        unitsEl.innerHTML = config.units == 'metric'?'imperial':'metric';
 
     }
 
