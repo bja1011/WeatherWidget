@@ -68,7 +68,10 @@ var weatherWidget = (function () {
     function setForecastWeather(weatherData) {
         var forecast = "<ul>";
         weatherData.list.forEach(function (el) {
-            forecast+=  "<li><span class='date'>"+el.temp.max+"</span>"+getIcon(el.weather[0].icon)+"</li>";
+            var date = new Date(el.dt*1000);
+            var month = parseInt(date.getMonth())+1;
+            var day = parseInt(date.getDate());
+            forecast+=  "<li><span class='date'>"+day+"-"+month+"</span><span class='date'>"+el.temp.max+"</span>"+getIcon(el.weather[0].icon)+"</li>";
         });
         forecast+="</ul>";
         forecastEl.innerHTML = forecast;
