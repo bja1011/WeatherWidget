@@ -3,9 +3,14 @@ var weatherWidget = (function () {
         getLocalization();
     };
 
+    var config = {
+        units: 'metric'
+    };
+
     var cityNameEl = document.getElementById("locationName");
     var forecastEl = document.getElementById("weatherForecast");
     var currentTemp = document.getElementById("currentTemp");
+    var currentIconEl = document.getElementById("currentIcon");
 
     var myLocation = {
         lat:null,
@@ -45,7 +50,8 @@ var weatherWidget = (function () {
 
     function setCurrentWeather(weatherData) {
         cityNameEl.innerHTML = weatherData.name;
-        currentTemp.innerHTML = weatherData.main.temp;
+        currentTemp.innerHTML = showTemperature(weatherData.main.temp);
+        loadIcon(weatherData.weather[0].icon);
     }
     function setForecastWeather(weatherData) {
         var forecast = "<ul>";
@@ -54,6 +60,26 @@ var weatherWidget = (function () {
         });
         forecast+="</ul>";
         forecastEl.innerHTML = forecast;
+    }
+    
+    function showTemperature(value) {
+        var unit = config.units=="metric"?"&#778;C":"&#778;F";
+        return Math.round(value)+" "+unit;
+    }
+
+    function loadIcon(iconId) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'assets/icons/'+iconId
+            +'.svg');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                currentIconEl.innerHTML = xhr.responseText;
+            }
+            else {
+                console.log('Error: ' + xhr.status);
+            }
+        };
+        xhr.send();
     }
 
     return {
