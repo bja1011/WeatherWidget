@@ -7,6 +7,16 @@ var weatherWidget = (function () {
         units: 'metric'
     };
 
+    var iconsEl;
+
+    loadIcons();
+
+
+    //preload svg icons as text, to allow svg elements animations
+    // var iconsCache = {};
+    // preloadIcons();
+
+
     var cityNameEl = document.getElementById("locationName");
     var forecastEl = document.getElementById("weatherForecast");
     var currentTemp = document.getElementById("currentTemp");
@@ -24,7 +34,7 @@ var weatherWidget = (function () {
                 getWeather('weather',position.coords.latitude,position.coords.longitude,function (resp) {
                     setCurrentWeather(resp)
                 });
-                getWeather('forecast',position.coords.latitude,position.coords.longitude,function (resp) {
+                getWeather('forecast/daily',position.coords.latitude,position.coords.longitude,function (resp) {
                     setForecastWeather(resp)
                 });
             });
@@ -51,12 +61,14 @@ var weatherWidget = (function () {
     function setCurrentWeather(weatherData) {
         cityNameEl.innerHTML = weatherData.name;
         currentTemp.innerHTML = showTemperature(weatherData.main.temp);
-        loadIcon(weatherData.weather[0].icon);
+        currentIconEl.innerHTML = getIcon(weatherData.weather[0].icon)
+
     }
+
     function setForecastWeather(weatherData) {
         var forecast = "<ul>";
         weatherData.list.forEach(function (el) {
-            forecast+=  "<li>"+el.main.temp+"</li>";
+            forecast+=  "<li><span class='date'>"+el.temp.max+"</span>"+getIcon(el.weather[0].icon)+"</li>";
         });
         forecast+="</ul>";
         forecastEl.innerHTML = forecast;
@@ -67,20 +79,29 @@ var weatherWidget = (function () {
         return Math.round(value)+" "+unit;
     }
 
-    function loadIcon(iconId) {
+    //load icons and create
+    function loadIcons() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'assets/icons/'+iconId
-            +'.svg');
+        xhr.open('GET', 'assets/icons/icons.svg');
         xhr.onload = function() {
             if (xhr.status === 200) {
-                currentIconEl.innerHTML = xhr.responseText;
+                iconsEl = document.createElement('div');
+                iconsEl.innerHTML = xhr.responseText;
             }
             else {
                 console.log('Error: ' + xhr.status);
             }
         };
         xhr.send();
+
+
     }
+
+    function getIcon(iconId) {
+        return iconsEl.querySelectorAll("#icon-"+iconId)[0].outerHTML;
+    }
+
+
 
     return {
         run:run
