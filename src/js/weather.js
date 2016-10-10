@@ -4,19 +4,13 @@ var weatherWidget = (function () {
     };
 
     var config = {
-        units: 'metric',
+        units: 'imperial',
         currentWeatherData:null
     };
 
     var iconsEl;
 
     loadIcons();
-
-
-    //preload svg icons as text, to allow svg elements animations
-    // var iconsCache = {};
-    // preloadIcons();
-
 
     var cityNameEl = document.getElementById("locationName");
     var forecastEl = document.getElementById("weatherForecast");
@@ -26,15 +20,26 @@ var weatherWidget = (function () {
     var currentPressureEl = document.getElementById("currentPressure");
     var currentIconEl = document.getElementById("currentIcon");
     var dateEl = document.getElementById("date");
+    var locationInputEl = document.getElementById("manualLocation");
+    var locationSubmitEl = document.getElementById("submit");
+    var manualLocationFormEl = document.getElementById("manualLocationForm");
+    var preloaderEl = document.getElementById("preload");
 
-    var myLocation = {
-        lat:null,
-        lng:null,
-        name:null
-    };
+    locationSubmitEl.onclick = function() {
+        if(locationInputEl.value != "") {
+            getWeather("weather",null,null,function (resp) {
+                setCurrentWeather(resp);
+            },locationInputEl.value);
+            getWeather("forecast/daily",null,null,function (resp) {
+                setForecastWeather(resp)
+            },locationInputEl.value);
+        };
+        return false;
+    }
 
     function getLocalization() {
         if ("geolocation" in navigator) {
+            console.log('sdf')
             navigator.geolocation.getCurrentPosition(function(position) {
 
                 getWeather('weather',position.coords.latitude,position.coords.longitude,function (resp) {
@@ -43,15 +48,28 @@ var weatherWidget = (function () {
                 getWeather('forecast/daily',position.coords.latitude,position.coords.longitude,function (resp) {
                     setForecastWeather(resp)
                 });
+            },function () {
+                manualLocationFormEl.style.display = "block";
             });
         } else {
-            alert('no geloloc')
+            manualLocationFormEl.style.display = "block";
         }
     }
 
-    function getWeather(type,lat,lng,callback) {
+    function getWeather(type,lat,lng,callback,city) {
+
+        var queryUrl = 'http://api.openweathermap.org/data/2.5/'+type;
+        if(city) {
+            queryUrl+='?q='+city+'&lang=pl&appid=1929fffb238baf259922bfbb99ae5a73';
+
+        } else {
+            queryUrl+='?lat='+lat+'&lang=pl&lon='+lng+'&appid=1929fffb238baf259922bfbb99ae5a73'
+        }
+
+        queryUrl+= '&units='+config.units;
+
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://api.openweathermap.org/data/2.5/'+type+'?lat='+lat+'&lang=pl&lon='+lng+'&appid=1929fffb238baf259922bfbb99ae5a73&units='+config.units);
+        xhr.open('GET', queryUrl);
         xhr.onload = function() {
             if (xhr.status === 200) {
                 var resp = JSON.parse(xhr.responseText);
@@ -62,9 +80,12 @@ var weatherWidget = (function () {
             }
         };
         xhr.send();
+
     }
 
     function setCurrentWeather(weatherData) {
+        preloaderEl.style.display = "none";
+        manualLocationFormEl.style.display = "none";
         config.currentWeatherData = weatherData;
         dateEl.innerHTML = formatDate(weatherData.dt);
         cityNameEl.innerHTML = weatherData.name;
@@ -114,7 +135,7 @@ var weatherWidget = (function () {
 
     }
 
-    //load icons and create
+    //load icons as html to use animations
     function loadIcons() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'assets/icons/icons.svg');
